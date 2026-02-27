@@ -2,9 +2,10 @@ import numpy as np
 import warnings
 from scipy.optimize import minimize
 from scipy.linalg import solve_banded
-from typing import Literal
+from typing import Literal, Optional
 
-def simulate_data(param, N, dt, rng, theta0 = 0):
+def simulate_data(param, N, dt, rng, theta0=0):
+    """Simulate latent phase and noisy observations for the linear model."""
     omega, Dtheta, R = param
     
     # time step tk = dt*k for k = 1...N (but python indexes from 0)
@@ -20,6 +21,7 @@ def simulate_data(param, N, dt, rng, theta0 = 0):
 
 
 def kalman_filter(param, data, priors):    
+    """Run scalar Kalman filtering for latent phase states."""
     omega, Dtheta, R = param
     tk, yk = data
     mu_theta, sigma_theta, *_ = priors
@@ -60,6 +62,7 @@ def kalman_filter(param, data, priors):
 
 
 def rts_smoother(param, data, kalman_phases):    
+    """Run Rauch-Tung-Striebel backward smoothing on filtered states."""
     omega, Dtheta, R = param
     tk, yk = data
     thetakk, Pkk, thetakk_1, Pkk_1 = kalman_phases
@@ -148,6 +151,7 @@ def jac(param, priors, statistics):
     
 
 def update_parameters(old_param, data, priors):
+    """Perform one EM/MAP parameter update step."""
     tk, yk = data
     _, _, mu_omega, sigma_omega, alpha_D, beta_D, alpha_R, beta_R = priors
 
@@ -185,6 +189,7 @@ def update_parameters(old_param, data, priors):
 
 
 def sample_phases(param, data, priors, rng, N_samples=1000):
+    """Draw latent phase trajectories with forward-filter backward-sampling."""
     #### Kalman Filter
     thetakk, Pkk, thetakk_1, Pkk_1 = kalman_filter(param, data, priors)
     
@@ -532,8 +537,21 @@ def missing_information(
     return I
 
     
-def estimate_uncertainty(lambda_map, data, priors, statistics, 
-                         method: Literal["MC", "exact"] = "exact"):
+def estimate_uncertainty(
+    lambda_map,
+    data,
+    priors,
+    statistics,
+    method: Literal["MC", "exact"] = "exact",
+    rng: Optional[np.random.Generator] = None,
+    N_samples: Optional[int] = None,
+):
+    """Estimate covariance of inferred parameters and EM convergence rate.
+
+    `method="exact"` uses analytic missing-information terms.
+    `method="MC"` uses phase-trajectory sampling and requires `rng` and
+    `N_samples`.
+    """
     omega, Dtheta, R = lambda_map
     tk, yk = data
     mu_theta, sigma_theta, *_ = priors
@@ -561,11 +579,12 @@ def estimate_uncertainty(lambda_map, data, priors, statistics,
             sigma_theta2=sigma_theta**2)
 
     elif method=="MC":
+        if rng is None or N_samples is None:
+            raise ValueError("For method='MC', provide rng and N_samples.")
         I_miss = missing_information_MC(lambda_map, data, priors, rng, N_samples)
         
     else:
-        # error message
-        print('error')
+        raise ValueError("method must be 'MC' or 'exact'.")
       
     # Observed information matrix
     I_obs = I_prior + I_comp - I_miss
@@ -585,6 +604,7 @@ def infer_MAP_parameters(
     verbose=True,
     print_every=10
 ):
+    """Iterate EM/MAP updates until relative parameter-change convergence."""
 
     lambda_iter = np.zeros((max_iter,3))
 
@@ -639,6 +659,7 @@ def simulate_and_infer(param, N, dt, rng, priors,
                        N_samples=1000, 
                        max_iter=500, 
                        tol=1e-5):
+    """Simulate data, infer MAP parameters, and estimate uncertainty."""
         
     ## Simulate unwrapped phase data
     tk, thetak, yk = simulate_data(param, N, dt, rng, theta0 = 0)
