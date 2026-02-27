@@ -14,5 +14,5 @@ Suggested naming:
 
 Contributor checklist:
 1. Add a short section in root `README.md` linking to the new example.
-2. Keep reusable logic in Python modules; keep notebooks focused on explanation and plots.
+2. Put reusable logic in `src/noisy_oscillator/`; keep notebooks focused on explanation and plots.
 3. Verify notebooks run top-to-bottom from a clean kernel.

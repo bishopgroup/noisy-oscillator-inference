@@ -14,7 +14,8 @@ structured to expand to additional oscillator models and datasets.
 ## Current Example
 
 Main files:
-- `examples/synthetic_phase_linear/SyntheticPhaseLinearMeasurement.py`
+- `src/noisy_oscillator/synthetic_phase_linear.py` (shared core implementation)
+- `examples/synthetic_phase_linear/SyntheticPhaseLinearMeasurement.py` (compatibility wrapper for notebooks)
 - `examples/synthetic_phase_linear/SyntheticPhaseLinearMeasurement.ipynb`
 - `examples/synthetic_phase_linear/SPLM_Performance.ipynb`
 
@@ -30,7 +31,8 @@ source .venv/bin/activate
 2. Install dependencies:
 
 ```bash
-pip install numpy scipy matplotlib pandas jupyter
+pip install -e .
+pip install jupyter
 ```
 
 3. Run the notebooks:
@@ -57,6 +59,8 @@ Suggested workflow for contributors:
 examples/
   synthetic_phase_linear/
   <other_examples>/
+src/
+  noisy_oscillator/
 ```
 
 As additional examples are added, each should live in its own folder under
@@ -64,3 +68,5 @@ As additional examples are added, each should live in its own folder under
 - model code (`.py`)
 - demonstration notebooks (`.ipynb`)
 - associated generated artifacts (`.pdf`, `.csv`) when needed
+
+Reusable logic shared across examples should be placed in `src/noisy_oscillator/`.
