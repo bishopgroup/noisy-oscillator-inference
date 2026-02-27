@@ -14,9 +14,9 @@ structured to expand to additional oscillator models and datasets.
 ## Current Example
 
 Main files:
-- `SyntheticPhase/LinearMeasurement/SyntheticPhaseLinearMeasurement.py`
-- `SyntheticPhase/LinearMeasurement/SyntheticPhaseLinearMeasurement.ipynb`
-- `SyntheticPhase/LinearMeasurement/SPLM_Performance.ipynb`
+- `examples/synthetic_phase_linear/SyntheticPhaseLinearMeasurement.py`
+- `examples/synthetic_phase_linear/SyntheticPhaseLinearMeasurement.ipynb`
+- `examples/synthetic_phase_linear/SPLM_Performance.ipynb`
 
 ## Quick Start
 
@@ -40,8 +40,8 @@ jupyter lab
 ```
 
 Then open:
-- `SyntheticPhaseLinearMeasurement.ipynb` for method walkthrough
-- `SPLM_Performance.ipynb` for benchmark/sensitivity sweeps
+- `examples/synthetic_phase_linear/SyntheticPhaseLinearMeasurement.ipynb` for method walkthrough
+- `examples/synthetic_phase_linear/SPLM_Performance.ipynb` for benchmark/sensitivity sweeps
 
 ## Collaboration Workflow
 
@@ -51,13 +51,16 @@ Suggested workflow for contributors:
 3. Commit small, focused changes with clear messages.
 4. Open a pull request for review before merge.
 
-## Planned Structure (as examples grow)
+## Repository Structure
 
 ```text
 examples/
   synthetic_phase_linear/
   <other_examples>/
-src/
-  noisy_oscillator/
-notebooks/
 ```
+
+As additional examples are added, each should live in its own folder under
+`examples/` with:
+- model code (`.py`)
+- demonstration notebooks (`.ipynb`)
+- associated generated artifacts (`.pdf`, `.csv`) when needed
